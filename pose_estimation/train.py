@@ -39,6 +39,19 @@ import models
 from models import MnasNet_ 
 
 
+class OneDriveLogger(object):
+
+    def __init__(self):
+        self.logs = []
+
+    def write_oneDrive(self, log):
+        """ Write log. """
+        self.file = open('C:/Users/aoyagi/OneDrive/pytorch/log.txt', 'a')
+        self.file.write(log + '\n')
+        self.file.flush()
+        self.file.close()
+        self.logs.append(log + '\n')
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Train keypoints network')
     # general
@@ -63,6 +76,8 @@ def parse_args():
                         help='num of dataloader workers',
                         type=int)
     parser.add_argument('--resume',
+                        type=str)
+    parser.add_argument('--useOneDrive',
                         action='store_true')
 
     args = parser.parse_args()
@@ -87,19 +102,29 @@ def main():
     logger.info(pprint.pformat(args))
     logger.info(pprint.pformat(config))
 
+    if args.useOneDrive == True:
+        oneDriveLogger = OneDriveLogger()
+    else:
+        oneDriveLogger = None
+
     # cudnn related setting
     cudnn.benchmark = config.CUDNN.BENCHMARK
     torch.backends.cudnn.deterministic = config.CUDNN.DETERMINISTIC
     torch.backends.cudnn.enabled = config.CUDNN.ENABLED
 
     model = MnasNet_()
-    if args.resume == True:
-        print("=> loading checkpoint '{}'".format(final_output_dir))
-        checkpoint = torch.load(args.resume)
-        args.start_epoch = checkpoint['epoch']
-        best_prec1 = checkpoint['best_prec1']
-        model.load_state_dict(checkpoint['state_dict'])
-        print("=> loaded checkpoint '{}' (epoch {})".format(args.resume, checkpoint['epoch']))
+    if args.resume:
+        # original saved file with DataParallel
+        state_dict = torch.load(args.resume)
+        # create new OrderedDict that does not contain `module.`
+        from collections import OrderedDict
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            name = k[7:] # remove `module.`
+            new_state_dict[name] = v
+        # load params
+        model.load_state_dict(new_state_dict)
+        #model.load_state_dict(torch.load(args.resume))
 
     '''
     model = eval('models.'+config.MODEL.NAME+'.get_pose_net')(
@@ -127,6 +152,7 @@ def main():
 
     gpus = [int(i) for i in config.GPUS.split(',')]
     model = torch.nn.DataParallel(model, device_ids=gpus).cuda()
+    #model.cuda()
 
     # define loss function (criterion) and optimizer
     criterion = JointsMSELoss(
@@ -185,13 +211,19 @@ def main():
 
         # train for one epoch
         train(config, train_loader, model, criterion, optimizer, epoch,
-              final_output_dir, tb_log_dir, writer_dict)
+              final_output_dir, tb_log_dir, writer_dict, oneDriveLogger)
 
+        filename = os.path.join(final_output_dir, 'epoch-{0}'.format(epoch + 1))
+        torch.save(model.state_dict(), filename + '.model')
+        lastestname = os.path.join(final_output_dir, 'lastest')
+        torch.save(model.state_dict(), lastestname + '.model')
+        if args.useOneDrive == True:
+            torch.save(model.state_dict(), 'C:/Users/aoyagi/OneDrive/pytorch/lastest.model')
 
         # evaluate on validation set
         perf_indicator = validate(config, valid_loader, valid_dataset, model,
                                   criterion, final_output_dir, tb_log_dir,
-                                  writer_dict)
+                                  writer_dict, oneDriveLogger)
 
         if perf_indicator > best_perf:
             best_perf = perf_indicator
@@ -207,7 +239,7 @@ def main():
             'perf': perf_indicator,
             'optimizer': optimizer.state_dict(),
         }, best_model, final_output_dir)
-
+        
     final_model_state_file = os.path.join(final_output_dir,
                                           'final_state.pth.tar')
     logger.info('saving final model state to {}'.format(

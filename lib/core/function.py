@@ -24,9 +24,8 @@ from utils.vis import save_debug_images
 
 logger = logging.getLogger(__name__)
 
-
 def train(config, train_loader, model, criterion, optimizer, epoch,
-          output_dir, tb_log_dir, writer_dict):
+          output_dir, tb_log_dir, writer_dict, oneDriveLogger=None):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -74,6 +73,8 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
                       speed=input.size(0)/batch_time.val,
                       data_time=data_time, loss=losses, acc=acc)
             logger.info(msg)
+            if oneDriveLogger != None:
+                oneDriveLogger.write_oneDrive(msg)
 
             writer = writer_dict['writer']
             global_steps = writer_dict['train_global_steps']
@@ -87,7 +88,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
 
 
 def validate(config, val_loader, val_dataset, model, criterion, output_dir,
-             tb_log_dir, writer_dict=None):
+             tb_log_dir, writer_dict=None, oneDriveLogger=None):
     batch_time = AverageMeter()
     losses = AverageMeter()
     acc = AverageMeter()
@@ -172,6 +173,8 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                           i, len(val_loader), batch_time=batch_time,
                           loss=losses, acc=acc)
                 logger.info(msg)
+                if oneDriveLogger != None:
+                    oneDriveLogger.write_oneDrive(msg)
 
                 prefix = '{}_{}'.format(os.path.join(output_dir, 'val'), i)
                 save_debug_images(config, input, meta, target, pred*4, heatmap,

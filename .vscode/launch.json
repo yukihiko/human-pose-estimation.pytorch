@@ -16,12 +16,25 @@
             ]
         },              
         {
+            "name": "Python: train_restart",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/pose_estimation/train.py",
+            "args": [
+                "--gpus=0",
+                "--useOneDrive",
+                "--cfg=${workspaceFolder}/experiments/mpii/MnasNet_/MnasNet_.yaml"
+            ]
+        }
+        {
             "name": "Python: train",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/pose_estimation/train.py",
             "args": [
                 "--gpus=0",
+                "--useOneDrive",
+                "--resume=${workspaceFolder}/output/mpii/MnasNet_/MnasNet_/epoch-3.model",
                 "--cfg=${workspaceFolder}/experiments/mpii/MnasNet_/MnasNet_.yaml"
             ]
         }
