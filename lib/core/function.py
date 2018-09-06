@@ -177,7 +177,7 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                     oneDriveLogger.write_oneDrive(msg)
 
                 prefix = '{}_{}'.format(os.path.join(output_dir, 'val'), i)
-                save_debug_images(config, input, meta, target, pred*4, heatmap,
+                save_debug_images(config, input, meta, target, pred*16, heatmap,
                                   prefix)
 
         name_values, perf_indicator = val_dataset.evaluate(
