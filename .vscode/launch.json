@@ -34,7 +34,7 @@
             "args": [
                 "--gpus=0",
                 "--useOneDrive",
-                "--resume=${workspaceFolder}/output/mpii/MnasNet_/MnasNet_/epoch-3.model",
+                "--resume=${workspaceFolder}/output/mpii/MnasNet_/MnasNet_/epoch-5.model",
                 "--cfg=${workspaceFolder}/experiments/mpii/MnasNet_/MnasNet_.yaml"
             ]
         }
