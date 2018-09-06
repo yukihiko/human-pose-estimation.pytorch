@@ -36,6 +36,7 @@ from utils.utils import create_logger
 
 import dataset
 import models
+from models import MnasNet_ 
 
 
 def parse_args():
@@ -61,6 +62,8 @@ def parse_args():
     parser.add_argument('--workers',
                         help='num of dataloader workers',
                         type=int)
+    parser.add_argument('--resume',
+                        action='store_true')
 
     args = parser.parse_args()
 
@@ -89,6 +92,16 @@ def main():
     torch.backends.cudnn.deterministic = config.CUDNN.DETERMINISTIC
     torch.backends.cudnn.enabled = config.CUDNN.ENABLED
 
+    model = MnasNet_()
+    if args.resume == True:
+        print("=> loading checkpoint '{}'".format(final_output_dir))
+        checkpoint = torch.load(args.resume)
+        args.start_epoch = checkpoint['epoch']
+        best_prec1 = checkpoint['best_prec1']
+        model.load_state_dict(checkpoint['state_dict'])
+        print("=> loaded checkpoint '{}' (epoch {})".format(args.resume, checkpoint['epoch']))
+
+    '''
     model = eval('models.'+config.MODEL.NAME+'.get_pose_net')(
         config, is_train=True
     )
@@ -98,6 +111,7 @@ def main():
     shutil.copy2(
         os.path.join(this_dir, '../lib/models', config.MODEL.NAME + '.py'),
         final_output_dir)
+    '''
 
     writer_dict = {
         'writer': SummaryWriter(log_dir=tb_log_dir),

@@ -214,6 +214,15 @@ def get_model_name(cfg):
             width=cfg.MODEL.IMAGE_SIZE[0],
             name=name,
             deconv_suffix=deconv_suffix)
+    if name in ['MnasNet_']:
+        name = 'MnasNet_'
+        deconv_suffix = ''.join(
+            'd{}'.format(num_filters)
+            for num_filters in extra.NUM_DECONV_FILTERS)
+        full_name = '{height}x{width}_{name}'.format(
+            height=cfg.MODEL.IMAGE_SIZE[1],
+            width=cfg.MODEL.IMAGE_SIZE[0],
+            name=name)
     else:
         raise ValueError('Unkown model: {}'.format(cfg.MODEL))
 

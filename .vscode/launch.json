@@ -21,7 +21,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/pose_estimation/train.py",
             "args": [
-                "--cfg=${workspaceFolder}/experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml"
+                "--gpus=0",
+                "--cfg=${workspaceFolder}/experiments/mpii/MnasNet_/MnasNet_.yaml"
             ]
         }
     ]
