@@ -79,6 +79,8 @@ def parse_args():
                         type=str)
     parser.add_argument('--useOneDrive',
                         action='store_true')
+    parser.add_argument('--useOffset',
+                        action='store_true')
 
     args = parser.parse_args()
 
@@ -113,7 +115,20 @@ def main():
     torch.backends.cudnn.enabled = config.CUDNN.ENABLED
 
     model = MnasNet_()
+    optimizer_state_dict = None
     if args.resume:
+        checkpoint = torch.load(args.resume)
+        state_dict = checkpoint['state_dict']
+        # create new OrderedDict that does not contain `module.`
+        from collections import OrderedDict
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            name = k[7:] # remove `module.`
+            new_state_dict[name] = v
+        # load params
+        model.load_state_dict(new_state_dict)
+        optimizer_state_dict = checkpoint['optimizer']
+        '''
         # original saved file with DataParallel
         state_dict = torch.load(args.resume)
         # create new OrderedDict that does not contain `module.`
@@ -125,6 +140,7 @@ def main():
         # load params
         model.load_state_dict(new_state_dict)
         #model.load_state_dict(torch.load(args.resume))
+        '''
 
     '''
     model = eval('models.'+config.MODEL.NAME+'.get_pose_net')(
@@ -160,6 +176,8 @@ def main():
     ).cuda()
 
     optimizer = get_optimizer(config, model)
+    if optimizer_state_dict != None:
+        optimizer.load_state_dict(optimizer_state_dict)
 
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
         optimizer, config.TRAIN.LR_STEP, config.TRAIN.LR_FACTOR
@@ -211,7 +229,7 @@ def main():
 
         # train for one epoch
         train(config, train_loader, model, criterion, optimizer, epoch,
-              final_output_dir, tb_log_dir, writer_dict, oneDriveLogger)
+              final_output_dir, tb_log_dir, writer_dict, oneDriveLogger, args.useOffset)
 
         filename = os.path.join(final_output_dir, 'epoch-{0}'.format(epoch + 1))
         torch.save(model.state_dict(), filename + '.model')
@@ -223,7 +241,7 @@ def main():
         # evaluate on validation set
         perf_indicator = validate(config, valid_loader, valid_dataset, model,
                                   criterion, final_output_dir, tb_log_dir,
-                                  writer_dict, oneDriveLogger)
+                                  writer_dict, oneDriveLogger, args.useOffset)
 
         if perf_indicator > best_perf:
             best_perf = perf_indicator

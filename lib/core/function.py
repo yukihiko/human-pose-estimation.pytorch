@@ -25,7 +25,7 @@ from utils.vis import save_debug_images
 logger = logging.getLogger(__name__)
 
 def train(config, train_loader, model, criterion, optimizer, epoch,
-          output_dir, tb_log_dir, writer_dict, oneDriveLogger=None):
+          output_dir, tb_log_dir, writer_dict, oneDriveLogger=None, useOffset=False):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -44,7 +44,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         target = target.cuda(non_blocking=True)
         target_weight = target_weight.cuda(non_blocking=True)
 
-        loss = criterion(heatmap, target, target_weight)
+        loss, pt = criterion(offset, heatmap, target, target_weight, meta)
 
         # compute gradient and do update step
         optimizer.zero_grad()
@@ -83,12 +83,14 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
             writer_dict['train_global_steps'] = global_steps + 1
 
             prefix = '{}_{}'.format(os.path.join(output_dir, 'train'), i)
-            save_debug_images(config, input, meta, target, pred*16, heatmap,
-                              prefix)
+            if useOffset == True:
+                save_debug_images(config, input, meta, target, pt, heatmap, prefix)
+            else:
+                save_debug_images(config, input, meta, target, pred*16, heatmap, prefix)
 
 
 def validate(config, val_loader, val_dataset, model, criterion, output_dir,
-             tb_log_dir, writer_dict=None, oneDriveLogger=None):
+             tb_log_dir, writer_dict=None, oneDriveLogger=None, useOffset=False):
     batch_time = AverageMeter()
     losses = AverageMeter()
     acc = AverageMeter()
@@ -130,7 +132,7 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
             target = target.cuda(non_blocking=True)
             target_weight = target_weight.cuda(non_blocking=True)
 
-            loss = criterion(heatmap, target, target_weight)
+            loss, pt = criterion(offset, heatmap, target, target_weight, meta, isValid=True)
 
             num_images = input.size(0)
             # measure accuracy and record loss
@@ -177,8 +179,10 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                     oneDriveLogger.write_oneDrive(msg)
 
                 prefix = '{}_{}'.format(os.path.join(output_dir, 'val'), i)
-                save_debug_images(config, input, meta, target, pred*16, heatmap,
-                                  prefix)
+                if useOffset == True:
+                    save_debug_images(config, input, meta, target, pt, heatmap, prefix)
+                else:
+                    save_debug_images(config, input, meta, target, pred*16, heatmap, prefix)
 
         name_values, perf_indicator = val_dataset.evaluate(
             config, all_preds, output_dir, all_boxes, image_path,

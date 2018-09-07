@@ -8,7 +8,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import torch
 import torch.nn as nn
+from torch.autograd import Variable
 
 
 class JointsMSELoss(nn.Module):
@@ -16,23 +18,60 @@ class JointsMSELoss(nn.Module):
         super(JointsMSELoss, self).__init__()
         self.criterion = nn.MSELoss(size_average=True)
         self.use_target_weight = use_target_weight
+        self.col = 16
+        self.scale = 1./float(self.col)
 
-    def forward(self, output, target, target_weight):
-        batch_size = output.size(0)
-        num_joints = output.size(1)
-        heatmaps_pred = output.reshape((batch_size, num_joints, -1)).split(1, 1)
+    def forward(self, offset, heatmap, target, target_weight, meta, isValid=False, useOffset=False):
+        batch_size = heatmap.size(0)
+        num_joints = heatmap.size(1)
+        
+        joints = meta['joints']
+        joints_vis = meta['joints_vis']
+        joints = joints[:, :, :2].float().cuda()
+        joints_vis = joints_vis[:, :, :2].float().cuda()
+        x = Variable(torch.zeros(joints.size()).float(), requires_grad=True).cuda()
+
+        heatmaps_pred = heatmap.reshape((batch_size, num_joints, -1)).split(1, 1)
         heatmaps_gt = target.reshape((batch_size, num_joints, -1)).split(1, 1)
         loss = 0
 
-        for idx in range(num_joints):
-            heatmap_pred = heatmaps_pred[idx].squeeze()
-            heatmap_gt = heatmaps_gt[idx].squeeze()
-            if self.use_target_weight:
-                loss += 0.5 * self.criterion(
-                    heatmap_pred.mul(target_weight[:, idx]),
-                    heatmap_gt.mul(target_weight[:, idx])
-                )
-            else:
-                loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt)
+        if isValid == False or useOffset == False:
+            for idx in range(num_joints):
+                heatmap_pred = heatmaps_pred[idx].squeeze()
+                heatmap_gt = heatmaps_gt[idx].squeeze()
+                if self.use_target_weight:
+                    loss += 0.5 * self.criterion(
+                        heatmap_pred.mul(target_weight[:, idx]),
+                        heatmap_gt.mul(target_weight[:, idx])
+                    )
+                else:
+                    loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt)
 
-        return loss / num_joints
+            d1 = loss / num_joints
+
+            if useOffset == False:
+                return d1, x
+
+        # loss offset
+        reshaped = heatmap.view(-1, num_joints, self.col*self.col)
+        _, argmax = reshaped.max(-1)
+        yCoords = argmax/self.col
+        xCoords = argmax - yCoords*self.col
+
+        for i in range(batch_size):
+            for j in range(num_joints):
+                #if heatmap[i, j, yCoords[i, j], xCoords[i, j]] > 0.5:
+                x[i, j, 0] = (offset[i, j, yCoords[i, j], xCoords[i, j]] + xCoords[i, j].float()) * self.col
+                x[i, j, 1] = (offset[i, j + 14, yCoords[i, j], xCoords[i, j]] + yCoords[i, j].float()) * self.col
+
+        diff2 = (x - joints)/256.
+        diff2 = diff2*joints_vis
+        N2 = (joints_vis.sum()/2).data[0]
+        diff2 = diff2.view(-1)
+        d2 = diff2.dot(diff2)/N2
+
+        if isValid == False:
+            return d1 + d2, x
+        else:
+            return d2, x
+
