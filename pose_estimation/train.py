@@ -193,7 +193,7 @@ def main():
         True,
         transforms.Compose([
             transforms.ToTensor(),
-            normalize,
+            #normalize,
         ])
     )
     valid_dataset = eval('dataset.'+config.DATASET.DATASET)(
@@ -203,7 +203,7 @@ def main():
         False,
         transforms.Compose([
             transforms.ToTensor(),
-            normalize,
+            #normalize,
         ])
     )
 
@@ -226,7 +226,7 @@ def main():
     best_model = False
     for epoch in range(config.TRAIN.BEGIN_EPOCH, config.TRAIN.END_EPOCH):
         lr_scheduler.step()
-
+        
         # train for one epoch
         train(config, train_loader, model, criterion, optimizer, epoch,
               final_output_dir, tb_log_dir, writer_dict, oneDriveLogger, args.useOffset)
@@ -237,7 +237,7 @@ def main():
         torch.save(model.state_dict(), lastestname + '.model')
         if args.useOneDrive == True:
             torch.save(model.state_dict(), 'C:/Users/aoyagi/OneDrive/pytorch/lastest.model')
-
+        
         # evaluate on validation set
         perf_indicator = validate(config, valid_loader, valid_dataset, model,
                                   criterion, final_output_dir, tb_log_dir,

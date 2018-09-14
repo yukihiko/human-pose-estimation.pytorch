@@ -44,7 +44,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         target = target.cuda(non_blocking=True)
         target_weight = target_weight.cuda(non_blocking=True)
 
-        loss, pt = criterion(offset, heatmap, target, target_weight, meta)
+        loss, pt = criterion(offset, heatmap, target, target_weight, meta, useOffset=useOffset)
 
         # compute gradient and do update step
         optimizer.zero_grad()
@@ -132,7 +132,7 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
             target = target.cuda(non_blocking=True)
             target_weight = target_weight.cuda(non_blocking=True)
 
-            loss, pt = criterion(offset, heatmap, target, target_weight, meta, isValid=True)
+            loss, pt = criterion(offset, heatmap, target, target_weight, meta, isValid=True, useOffset=useOffset)
 
             num_images = input.size(0)
             # measure accuracy and record loss
@@ -151,9 +151,10 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
             score = meta['score'].numpy()
 
             preds, maxvals = get_final_preds(
-                config, heatmap.clone().cpu().numpy(), c, s)
+                config, heatmap.clone().cpu().numpy(), pt.clone().cpu()/16, c, s)
 
             all_preds[idx:idx + num_images, :, 0:2] = preds[:, :, 0:2]
+            #all_preds[idx:idx + num_images, :, 0:2] = pt/256.
             all_preds[idx:idx + num_images, :, 2:3] = maxvals
             # double check this all_boxes parts
             all_boxes[idx:idx + num_images, 0:2] = c[:, 0:2]

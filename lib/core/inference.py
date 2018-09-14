@@ -46,7 +46,7 @@ def get_max_preds(batch_heatmaps):
     return preds, maxvals
 
 
-def get_final_preds(config, batch_heatmaps, center, scale):
+def get_final_preds(config, batch_heatmaps, pt, center, scale):
     coords, maxvals = get_max_preds(batch_heatmaps)
 
     heatmap_height = batch_heatmaps.shape[2]
@@ -64,11 +64,12 @@ def get_final_preds(config, batch_heatmaps, center, scale):
                                      hm[py+1][px]-hm[py-1][px]])
                     coords[n][p] += np.sign(diff) * .25
 
-    preds = coords.copy()
+    #preds = coords.copy()
+    preds = pt.numpy().copy()
 
     # Transform back
     for i in range(coords.shape[0]):
-        preds[i] = transform_preds(coords[i], center[i], scale[i],
+        preds[i] = transform_preds(pt[i], center[i], scale[i],
                                    [heatmap_width, heatmap_height])
 
     return preds, maxvals
