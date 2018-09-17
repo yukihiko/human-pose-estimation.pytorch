@@ -22,7 +22,7 @@
             "program": "${workspaceFolder}/pose_estimation/train.py",
             "args": [
                 "--gpus=0",
-                "--useOneDrive",
+                "--NN=MobileNet16_",
                 "--cfg=${workspaceFolder}/experiments/mpii/MnasNet_/MnasNet_.yaml"
             ]
         }
@@ -33,7 +33,7 @@
             "program": "${workspaceFolder}/pose_estimation/train.py",
             "args": [
                 "--gpus=0",
-                "--useOneDrive",
+                "--NN=MobileNet16_",
                 "--useOffset",
                 "--resume=${workspaceFolder}/output/mpii/MnasNet_/MnasNet_/checkpoint.pth.tar",
                 "--cfg=${workspaceFolder}/experiments/mpii/MnasNet_/MnasNet_.yaml"

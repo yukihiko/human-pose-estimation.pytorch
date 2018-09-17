@@ -25,7 +25,7 @@ from utils.vis import save_debug_images
 logger = logging.getLogger(__name__)
 
 def train(config, train_loader, model, criterion, optimizer, epoch,
-          output_dir, tb_log_dir, writer_dict, oneDriveLogger=None, useOffset=False):
+          output_dir, tb_log_dir, writer_dict, oneDriveLogger=None, useOffset=False, gpu=True):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -38,6 +38,9 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
     for i, (input, target, target_weight, meta) in enumerate(train_loader):
         # measure data loading time
         data_time.update(time.time() - end)
+
+        if gpu == True:
+            input, target, target_weight, meta = input.cuda(), target.cuda(), target_weight.cuda(), meta
 
         # compute output
         offset, heatmap = model(input)
@@ -90,7 +93,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
 
 
 def validate(config, val_loader, val_dataset, model, criterion, output_dir,
-             tb_log_dir, writer_dict=None, oneDriveLogger=None, useOffset=False):
+             tb_log_dir, writer_dict=None, oneDriveLogger=None, useOffset=False, gpu=True):
     batch_time = AverageMeter()
     losses = AverageMeter()
     acc = AverageMeter()
@@ -109,6 +112,10 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
     with torch.no_grad():
         end = time.time()
         for i, (input, target, target_weight, meta) in enumerate(val_loader):
+            
+            if gpu == True:
+                input, target, target_weight, meta = input.cuda(), target.cuda(), target_weight.cuda(), meta
+
             # compute output
             offset, heatmap = model(input)
             if config.TEST.FLIP_TEST:

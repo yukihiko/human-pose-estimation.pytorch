@@ -36,7 +36,7 @@ from utils.utils import create_logger
 
 import dataset
 import models
-from models import MnasNet_ 
+from models import MnasNet_, MobileNet16_
 
 
 class OneDriveLogger(object):
@@ -81,6 +81,9 @@ def parse_args():
                         action='store_true')
     parser.add_argument('--useOffset',
                         action='store_true')
+    parser.add_argument('--NN',
+                        help='NN',
+                        type=str)
 
     args = parser.parse_args()
 
@@ -114,9 +117,18 @@ def main():
     torch.backends.cudnn.deterministic = config.CUDNN.DETERMINISTIC
     torch.backends.cudnn.enabled = config.CUDNN.ENABLED
 
-    model = MnasNet_()
+    if args.NN == "MobileNet16_":
+        model = MobileNet16_()
+    else:
+        model = MnasNet_()
+
     optimizer_state_dict = None
     if args.resume:
+        checkpoint = torch.load(args.resume)
+        state_dict = checkpoint['state_dict']
+        model.load_state_dict(state_dict)
+        optimizer_state_dict = checkpoint['optimizer']
+        '''
         checkpoint = torch.load(args.resume)
         state_dict = checkpoint['state_dict']
         # create new OrderedDict that does not contain `module.`
@@ -129,30 +141,7 @@ def main():
         model.load_state_dict(new_state_dict)
         optimizer_state_dict = checkpoint['optimizer']
         '''
-        # original saved file with DataParallel
-        state_dict = torch.load(args.resume)
-        # create new OrderedDict that does not contain `module.`
-        from collections import OrderedDict
-        new_state_dict = OrderedDict()
-        for k, v in state_dict.items():
-            name = k[7:] # remove `module.`
-            new_state_dict[name] = v
-        # load params
-        model.load_state_dict(new_state_dict)
         #model.load_state_dict(torch.load(args.resume))
-        '''
-
-    '''
-    model = eval('models.'+config.MODEL.NAME+'.get_pose_net')(
-        config, is_train=True
-    )
-
-    # copy model file
-    this_dir = os.path.dirname(__file__)
-    shutil.copy2(
-        os.path.join(this_dir, '../lib/models', config.MODEL.NAME + '.py'),
-        final_output_dir)
-    '''
 
     writer_dict = {
         'writer': SummaryWriter(log_dir=tb_log_dir),
@@ -167,8 +156,8 @@ def main():
     #writer_dict['writer'].add_graph(model, (dump_input, ))
 
     gpus = [int(i) for i in config.GPUS.split(',')]
-    model = torch.nn.DataParallel(model, device_ids=gpus).cuda()
-    #model.cuda()
+    #model = torch.nn.DataParallel(model, device_ids=gpus).cuda()
+    model.cuda()
 
     # define loss function (criterion) and optimizer
     criterion = JointsMSELoss(

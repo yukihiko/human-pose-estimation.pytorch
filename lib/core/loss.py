@@ -35,22 +35,21 @@ class JointsMSELoss(nn.Module):
         heatmaps_gt = target.reshape((batch_size, num_joints, -1)).split(1, 1)
         loss = 0
 
-        if isValid == False or useOffset == True:
-            for idx in range(num_joints):
-                heatmap_pred = heatmaps_pred[idx].squeeze()
-                heatmap_gt = heatmaps_gt[idx].squeeze()
-                if self.use_target_weight:
-                    loss += 0.5 * self.criterion(
-                        heatmap_pred.mul(target_weight[:, idx]),
-                        heatmap_gt.mul(target_weight[:, idx])
-                    )
-                else:
-                    loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt)
+        for idx in range(num_joints):
+            heatmap_pred = heatmaps_pred[idx].squeeze()
+            heatmap_gt = heatmaps_gt[idx].squeeze()
+            if self.use_target_weight:
+                loss += 0.5 * self.criterion(
+                    heatmap_pred.mul(target_weight[:, idx]),
+                    heatmap_gt.mul(target_weight[:, idx])
+                )
+            else:
+                loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt)
 
-            d1 = loss / num_joints
+        d1 = loss / num_joints
 
-            if useOffset == False:
-                return d1, x
+        if useOffset == False:
+            return d1, x
 
         # loss offset
         reshaped = heatmap.view(-1, num_joints, self.col*self.col)
@@ -71,10 +70,3 @@ class JointsMSELoss(nn.Module):
         d2 = diff2.dot(diff2)/N2
 
         return d1 + d2/256., x
-        '''
-        if isValid == False:
-            return d1 + d2/256., x
-        else:
-            return d2/256., x
-        '''
-
