@@ -23,7 +23,8 @@
             "args": [
                 "--gpus=0",
                 "--NN=MobileNet16_",
-                "--cfg=${workspaceFolder}/experiments/mpii/MnasNet_/MnasNet_.yaml"
+                "--useOneDrive",
+                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet_/MobileNet_.yaml"
             ]
         }
         {
@@ -35,8 +36,9 @@
                 "--gpus=0",
                 "--NN=MobileNet16_",
                 "--useOffset",
-                "--resume=${workspaceFolder}/output/mpii/MnasNet_/MnasNet_/checkpoint.pth.tar",
-                "--cfg=${workspaceFolder}/experiments/mpii/MnasNet_/MnasNet_.yaml"
+                "--useOneDrive",
+                "--resume=${workspaceFolder}/output/mpii/MnasNet_/MobileNet_/checkpoint.pth.tar",
+                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet_/MobileNet_.yaml"
             ]
         }
     ]
