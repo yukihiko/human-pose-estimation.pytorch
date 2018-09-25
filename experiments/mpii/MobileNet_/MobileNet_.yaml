@@ -14,11 +14,11 @@ DATASET:
   TEST_SET: valid
   TRAIN_SET: train
   FLIP: true
-  ROT_FACTOR: 30
+  ROT_FACTOR: 89
   SCALE_FACTOR: 0.25
 MODEL:
-  NAME: MnasNet_
-  PRETRAINED: 'models/pytorch/MnasNet_.pth'
+  NAME: MobileNet16_
+  PRETRAINED: 'models/pytorch/MobileNet16_.pth'
   IMAGE_SIZE:
   - 256
   - 256

@@ -64,6 +64,6 @@ class JointsMSELoss(nn.Module):
         diff2 = diff2*joints_vis
         N2 = (joints_vis.sum()/2).data[0]
         diff2 = diff2.view(-1)
-        d2 = diff2.dot(diff2)/N2
+        d2 = 0.5 * torch.sqrt(diff2.dot(diff2))/N2
 
-        return d1 + d2/256., x
+        return d1 + d2, x

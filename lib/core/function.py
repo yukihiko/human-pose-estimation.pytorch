@@ -199,9 +199,9 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
         _, full_arch_name = get_model_name(config)
         if isinstance(name_values, list):
             for name_value in name_values:
-                _print_name_value(name_value, full_arch_name)
+                _print_name_value(name_value, full_arch_name, oneDriveLogger)
         else:
-            _print_name_value(name_values, full_arch_name)
+            _print_name_value(name_values, full_arch_name, oneDriveLogger)
 
         if writer_dict:
             writer = writer_dict['writer']
@@ -219,7 +219,7 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
 
 
 # markdown format output
-def _print_name_value(name_value, full_arch_name):
+def _print_name_value(name_value, full_arch_name, oneDriveLogger=None):
     names = name_value.keys()
     values = name_value.values()
     num_values = len(name_value)
@@ -234,6 +234,18 @@ def _print_name_value(name_value, full_arch_name):
         ' '.join(['| {:.3f}'.format(value) for value in values]) +
          ' |'
     )
+    if oneDriveLogger != None:
+        oneDriveLogger.write_oneDrive(
+            '| Arch ' +
+            ' '.join(['| {}'.format(name) for name in names]) +
+            ' |'
+        )
+        oneDriveLogger.write_oneDrive('|---' * (num_values+1) + '|')
+        oneDriveLogger.write_oneDrive(
+            '| ' + full_arch_name + ' ' +
+            ' '.join(['| {:.3f}'.format(value) for value in values]) +
+            ' |'
+        )
 
 
 class AverageMeter(object):

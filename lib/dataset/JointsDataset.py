@@ -88,8 +88,10 @@ class JointsDataset(Dataset):
             rf = self.rotation_factor
             s = s * np.clip(np.random.randn()*sf + 1, 1 - sf, 1 + sf)
             r = np.clip(np.random.randn()*rf, -rf*2, rf*2) \
-                if random.random() <= 0.6 else 0
+                if random.random() <= 0.9 else 0
+                #if random.random() <= 0.6 else 0
 
+            #if self.flip and random.random() <= 0.5:
             if self.flip and random.random() <= 0.5:
                 data_numpy = data_numpy[:, ::-1, :]
                 joints, joints_vis = fliplr_joints(

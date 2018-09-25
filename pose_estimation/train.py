@@ -119,15 +119,13 @@ def main():
 
     if args.NN == "MobileNet16_":
         model = MobileNet16_()
+    elif args.NN == "MnasNet16_":
+        model = MnasNet_()
     else:
         model = MnasNet_()
 
     optimizer_state_dict = None
     if args.resume:
-        checkpoint = torch.load(args.resume)
-        state_dict = checkpoint['state_dict']
-        model.load_state_dict(state_dict)
-        optimizer_state_dict = checkpoint['optimizer']
         '''
         checkpoint = torch.load(args.resume)
         state_dict = checkpoint['state_dict']
@@ -141,6 +139,10 @@ def main():
         model.load_state_dict(new_state_dict)
         optimizer_state_dict = checkpoint['optimizer']
         '''
+        checkpoint = torch.load(args.resume)
+        state_dict = checkpoint['state_dict']
+        model.load_state_dict(state_dict)
+        optimizer_state_dict = checkpoint['optimizer']
         #model.load_state_dict(torch.load(args.resume))
 
     writer_dict = {
