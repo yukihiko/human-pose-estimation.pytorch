@@ -35,6 +35,7 @@
             "args": [
                 "--gpus=0",
                 "--NN=MobileNet16_",
+                "--useOffset",
                 "--useOneDrive",
                 "--resume=${workspaceFolder}/output/mpii/MobileNet16_/MobileNet_/checkpoint.pth.tar",
                 "--cfg=${workspaceFolder}/experiments/mpii/MobileNet_/MobileNet_.yaml"

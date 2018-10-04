@@ -1,0 +1,12 @@
+*.log
+*.pyc
+__pycache__/
+.pytest_cache
+.cache
+*.tar
+site/
+env/
+.env/
+.idea/
+logs/
+.DS_Store
