@@ -177,28 +177,6 @@ def main():
     #model = torch.nn.DataParallel(model, device_ids=gpus).cuda()
     model.cuda()
 
-    #pruning modile
-    model.eval()
-    dummy_input = Variable(torch.randn(1, 3, 256, 256)).cuda()
-    model.eval()
-    _ = model(dummy_input)
-    '''
-    all_weights = []
-    for p in model.parameters():
-        if len(p.data.size()) != 1:
-            all_weights += list(p.cpu().data.abs().numpy().flatten())
-    threshold = np.percentile(np.array(all_weights), 5.)
-    
-    fgraph(model.model, threshold)
-    
-    for child in model.children():
-        for param in child.parameters():
-            param.reguired_grand = False
-    '''
-    filename = os.path.join(final_output_dir, 'pruning')
-    torch.save(model.state_dict(), filename + '.model')
-    # end pruning model
-
     # define loss function (criterion) and optimizer
     criterion = JointsMSELoss(
         use_target_weight=config.LOSS.USE_TARGET_WEIGHT
@@ -256,7 +234,7 @@ def main():
     for epoch in range(config.TRAIN.BEGIN_EPOCH, config.TRAIN.END_EPOCH):
         lr_scheduler.step()
         
-        '''
+        
         # train for one epoch
         train(config, train_loader, model, criterion, optimizer, epoch,
               final_output_dir, tb_log_dir, writer_dict, oneDriveLogger, args.useOffset)
@@ -267,7 +245,7 @@ def main():
         torch.save(model.state_dict(), lastestname + '.model')
         if args.useOneDrive == True:
             torch.save(model.state_dict(), 'C:/Users/aoyagi/OneDrive/pytorch/lastest.model')
-        '''
+        
         # evaluate on validation set
         perf_indicator = validate(config, valid_loader, valid_dataset, model,
                                   criterion, final_output_dir, tb_log_dir,
