@@ -3,13 +3,10 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-import sys
-sys.path.append("./")
-from models.ReLU6_ import ReLU6_
 
-class MobileNet16_(nn.Module):
+class MobileNet162_(nn.Module):
     def __init__(self):
-        super(MobileNet16_, self).__init__()
+        super(MobileNet162_, self).__init__()
         self.col = 16
         self.Nj = 16
 
@@ -22,12 +19,12 @@ class MobileNet16_(nn.Module):
 
         def conv_dw(inp, oup, stride):
             return nn.Sequential(
-                nn.Conv2d(inp, inp, 3, stride, 1, groups=inp, bias=False),
-                nn.BatchNorm2d(inp),
+                nn.Conv2d(inp, inp, 3, stride, 1, groups=inp, bias=True),
+                #nn.BatchNorm2d(inp),
                 nn.ReLU(inplace=True),
     
-                nn.Conv2d(inp, oup, 1, 1, 0, bias=False),
-                nn.BatchNorm2d(oup),
+                nn.Conv2d(inp, oup, 1, 1, 0, bias=True),
+                #nn.BatchNorm2d(oup),
                 nn.ReLU(inplace=True),
             )
 
@@ -47,10 +44,13 @@ class MobileNet16_(nn.Module):
             conv_dw(512, 1024, 1),
             conv_dw(1024, 1024, 1),
         )
-        self.output = nn.Conv2d(1024, self.Nj*3, 1)
+        self.heatmap = nn.Conv2d(1024, self.Nj, 1)
+        self.offset = nn.Conv2d(1024, self.Nj*2, 1)
 
     def forward(self, x):
         x = self.model(x)
-        x = self.output(x)
+        h = self.heatmap(x)
+        h = F.sigmoid(h)
+        o = self.offset(x)
 
-        return x
+        return o, h

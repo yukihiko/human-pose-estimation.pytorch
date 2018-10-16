@@ -38,7 +38,7 @@ from utils.utils import create_logger
 
 import dataset
 import models
-from models import MnasNet_, MobileNet16_
+from models import MnasNet_, MobileNet16_, MobileNet162_
 
 
 class OneDriveLogger(object):
@@ -137,6 +137,8 @@ def main():
         model = MobileNet16_()
     elif args.NN == "MnasNet16_":
         model = MnasNet_()
+    elif args.NN == "MobileNet162_":
+        model = MobileNet162_()
     else:
         model = MnasNet_()
 

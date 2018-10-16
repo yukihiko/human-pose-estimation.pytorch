@@ -11,6 +11,7 @@ from __future__ import print_function
 import models.pose_resnet
 from models.MnasNet_ import MnasNet_
 from models.MobileNet16_ import MobileNet16_
+from models.MobileNet162_ import MobileNet162_
 from models.ReLU6_ import ReLU6_
 
-__all__ = ['MnasNet_', 'MobileNet16_', 'ReLU6_']
+__all__ = ['MnasNet_', 'MobileNet16_', 'MobileNet162_', 'ReLU6_']

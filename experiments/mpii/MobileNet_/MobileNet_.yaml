@@ -17,8 +17,8 @@ DATASET:
   ROT_FACTOR: 89
   SCALE_FACTOR: 0.25
 MODEL:
-  NAME: MobileNet16_
-  PRETRAINED: 'models/pytorch/MobileNet16_.pth'
+  NAME: MobileNet162_
+  PRETRAINED: 'models/pytorch/MobileNet162_.pth'
   IMAGE_SIZE:
   - 256
   - 256
