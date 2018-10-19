@@ -14,11 +14,11 @@ from torch.autograd import Variable
 
 
 class JointsMSELoss(nn.Module):
-    def __init__(self, use_target_weight):
+    def __init__(self, use_target_weight, heatmap_size):
         super(JointsMSELoss, self).__init__()
         self.criterion = nn.MSELoss(size_average=True)
         self.use_target_weight = use_target_weight
-        self.col = 16
+        self.col = float(heatmap_size)
         self.scale = 1./float(self.col)
 
     def forward(self, offset, heatmap, target, target_weight, meta, isValid=False, useOffset=False):
@@ -58,11 +58,11 @@ class JointsMSELoss(nn.Module):
             for j in range(num_joints):
                 #if heatmap[i, j, yCoords[i, j], xCoords[i, j]] > 0.5:
                 x[i, j, 0] = (offset[i, j, yCoords[i, j], xCoords[i, j]] + xCoords[i, j].float()) * self.col
-                x[i, j, 1] = (offset[i, j + 14, yCoords[i, j], xCoords[i, j]] + yCoords[i, j].float()) * self.col
+                x[i, j, 1] = (offset[i, j + 16, yCoords[i, j], xCoords[i, j]] + yCoords[i, j].float()) * self.col
 
         diff2 = (x - joints)
         diff2 = diff2*joints_vis/256.
-        N2 = (joints_vis.sum()).data[0]
+        N2 = (joints_vis.sum()).data[0]/2.0
         diff2 = diff2.view(-1)
         d2 = 0.5 * torch.sqrt(diff2.dot(diff2))/N2
 

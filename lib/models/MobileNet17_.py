@@ -7,10 +7,10 @@ import sys
 sys.path.append("./")
 from models.ReLU6_ import ReLU6_
 
-class MobileNet16_(nn.Module):
+class MobileNet17_(nn.Module):
     def __init__(self):
-        super(MobileNet16_, self).__init__()
-        self.col = 16
+        super(MobileNet17_, self).__init__()
+        self.col = 14
         self.Nj = 16
 
         def conv_bn(inp, oup, stride):

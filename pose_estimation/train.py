@@ -23,6 +23,7 @@ import torchvision.transforms as transforms
 from tensorboardX import SummaryWriter
 import numpy as np
 from torch.autograd import Variable
+import torch.nn as nn
 
 import _init_paths
 from core.config import config
@@ -38,7 +39,7 @@ from utils.utils import create_logger
 
 import dataset
 import models
-from models import MnasNet_, MobileNet16_, MobileNet162_
+from models import MnasNet_, MobileNet16_, MobileNet162_, MobileNet17_
 
 
 class OneDriveLogger(object):
@@ -83,9 +84,6 @@ def parse_args():
                         action='store_true')
     parser.add_argument('--useOffset',
                         action='store_true')
-    parser.add_argument('--NN',
-                        help='NN',
-                        type=str)
 
     args = parser.parse_args()
 
@@ -133,14 +131,14 @@ def main():
     torch.backends.cudnn.deterministic = config.CUDNN.DETERMINISTIC
     torch.backends.cudnn.enabled = config.CUDNN.ENABLED
 
-    if args.NN == "MobileNet16_":
+    if config.MODEL.NAME == "MobileNet16_":
         model = MobileNet16_()
-    elif args.NN == "MnasNet16_":
+    elif config.MODEL.NAME == "MnasNet16_":
         model = MnasNet_()
-    elif args.NN == "MobileNet162_":
+    elif config.MODEL.NAME== "MobileNet162_":
         model = MobileNet162_()
     else:
-        model = MnasNet_()
+        model = eval(config.MODEL.NAME)()
 
     optimizer_state_dict = None
     if args.resume:
@@ -161,7 +159,20 @@ def main():
         state_dict = checkpoint['state_dict']
         model.load_state_dict(state_dict)
         optimizer_state_dict = checkpoint['optimizer']
+
         #model.load_state_dict(torch.load(args.resume))
+    
+        '''
+        optimizer = get_optimizer(config, model)
+
+        for p in model.model.parameters():
+            p.requires_grad = False
+        heatmap_data = model.heatmap.weight.data 
+        model.heatmap = nn.Conv2d(1024, 16, 1, bias=False)
+        model.offset = nn.Conv2d(1024, 16*2, 1, bias=False)
+        model.heatmap.weight.data = heatmap_data
+        model.offset.weight.data = torch.from_numpy(np.zeros_like(model.offset.weight.data)) 
+        '''
 
     writer_dict = {
         'writer': SummaryWriter(log_dir=tb_log_dir),
@@ -180,11 +191,13 @@ def main():
     model.cuda()
 
     # define loss function (criterion) and optimizer
-    criterion = JointsMSELoss(
-        use_target_weight=config.LOSS.USE_TARGET_WEIGHT
-    ).cuda()
 
+    criterion = JointsMSELoss(
+        use_target_weight=config.LOSS.USE_TARGET_WEIGHT, heatmap_size=config.MODEL.EXTRA.HEATMAP_SIZE[0]
+    ).cuda()
+        
     optimizer = get_optimizer(config, model)
+
     if optimizer_state_dict != None:
         optimizer.load_state_dict(optimizer_state_dict)
 
@@ -193,8 +206,8 @@ def main():
     )
 
     # Data loading code
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
+    normalize = transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                                     std=[0.5, 0.5, 0.5])
     train_dataset = eval('dataset.'+config.DATASET.DATASET)(
         config,
         config.DATASET.ROOT,

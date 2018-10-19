@@ -22,10 +22,10 @@
             "program": "${workspaceFolder}/pose_estimation/train.py",
             "args": [
                 "--gpus=0",
-                "--NN=MobileNet162_",
                 "--useOneDrive",
-                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet_/MobileNet_.yaml"
-            ]
+                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet_/MobileNet17_.yaml"
+            ],
+            "console": "none",
         }
         {
             "name": "Python: train",
@@ -34,12 +34,12 @@
             "program": "${workspaceFolder}/pose_estimation/train.py",
             "args": [
                 "--gpus=0",
-                "--NN=MobileNet162_",
                 "--useOffset",
                 "--useOneDrive",
-                "--resume=${workspaceFolder}/output/mpii/MobileNet16_/MobileNet_/checkpoint.pth.tar",
-                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet_/MobileNet_.yaml"
-            ]
+                "--resume=${workspaceFolder}/output/mpii/MobileNet16_/MobileNet16_/checkpoint.pth.tar",
+                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet16_/MobileNet16_.yaml"
+            ],
+            "console": "none",
         }
     ]
 }
