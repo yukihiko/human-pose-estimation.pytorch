@@ -49,7 +49,7 @@ class JointsMSELoss(nn.Module):
             return d1, x
 
         # loss offset
-        reshaped = heatmap.view(-1, num_joints, self.col*self.col)
+        reshaped = heatmap.view(-1, num_joints, int(self.col*self.col))
         _, argmax = reshaped.max(-1)
         yCoords = argmax/self.col
         xCoords = argmax - yCoords*self.col

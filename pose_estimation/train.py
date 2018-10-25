@@ -49,7 +49,7 @@ class OneDriveLogger(object):
 
     def write_oneDrive(self, log):
         """ Write log. """
-        self.file = open('C:/Users/aoyagi/OneDrive/pytorch/log.txt', 'a')
+        self.file = open('C:/Users/aoyag/OneDrive/pytorch/log.txt', 'a')
         self.file.write(log + '\n')
         self.file.flush()
         self.file.close()
@@ -259,7 +259,7 @@ def main():
         lastestname = os.path.join(final_output_dir, 'lastest')
         torch.save(model.state_dict(), lastestname + '.model')
         if args.useOneDrive == True:
-            torch.save(model.state_dict(), 'C:/Users/aoyagi/OneDrive/pytorch/lastest.model')
+            torch.save(model.state_dict(), 'C:/Users/aoyag/OneDrive/pytorch/lastest.model')
         
         # evaluate on validation set
         perf_indicator = validate(config, valid_loader, valid_dataset, model,
