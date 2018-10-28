@@ -35,7 +35,7 @@
             "args": [
                 "--gpus=0",
                 "--useOffset",
-                "--resume=${workspaceFolder}/output/mpii/MobileNet14_/MobileNet14_/renew.model",
+                "--resume=${workspaceFolder}/output/mpii/MobileNet14_/MobileNet14_/checkpoint.pth.tar",
                 "--cfg=${workspaceFolder}/experiments/mpii/MobileNet14_/MobileNet14_.yaml"
             ],
             "console": "none",
