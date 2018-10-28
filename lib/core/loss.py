@@ -61,7 +61,7 @@ class JointsMSELoss(nn.Module):
                 x[i, j, 1] = (offset[i, j + 16, yCoords[i, j], xCoords[i, j]] + yCoords[i, j].float()) * self.col
 
         diff2 = (x - joints)
-        diff2 = diff2*joints_vis/256.
+        diff2 = diff2*joints_vis/224.
         N2 = (joints_vis.sum()).data[0]/2.0
         diff2 = diff2.view(-1)
         d2 = 0.5 * torch.sqrt(diff2.dot(diff2))/N2

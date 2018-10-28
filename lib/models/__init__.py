@@ -13,7 +13,9 @@ from models.MnasNet_ import MnasNet_
 from models.MobileNet16_ import MobileNet16_
 from models.MobileNet162_ import MobileNet162_
 from models.MobileNet17_ import MobileNet17_
+from models.MobileNet14_ import MobileNet14_
+from models.MobileNet_ import MobileNet_
 
 from models.ReLU6_ import ReLU6_
 
-__all__ = ['MnasNet_', 'MobileNet16_', 'MobileNet162_', 'ReLU6_', 'MobileNet17_']
+__all__ = ['MnasNet_', 'MobileNet16_', 'MobileNet162_', 'ReLU6_', 'MobileNet17_', 'MobileNet14_', 'MobileNet_']

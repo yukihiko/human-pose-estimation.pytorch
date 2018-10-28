@@ -39,7 +39,7 @@ from utils.utils import create_logger
 
 import dataset
 import models
-from models import MnasNet_, MobileNet16_, MobileNet162_, MobileNet17_
+from models import MnasNet_, MobileNet16_, MobileNet162_, MobileNet17_, MobileNet14_, MobileNet_
 
 
 class OneDriveLogger(object):
@@ -130,6 +130,16 @@ def main():
     cudnn.benchmark = config.CUDNN.BENCHMARK
     torch.backends.cudnn.deterministic = config.CUDNN.DETERMINISTIC
     torch.backends.cudnn.enabled = config.CUDNN.ENABLED
+    '''
+    model = MobileNet_()
+    model.load_state_dict(torch.load(args.resume))
+    model.heatmap = nn.Conv2d(1024, 16, 1, bias=False)
+    model.offset = nn.Conv2d(1024, 16*2, 1, bias=False)
+    model.offset.weight.data = torch.from_numpy(np.zeros_like(model.offset.weight.data)) 
+    model.heatmap.weight.data = torch.from_numpy(np.zeros_like(model.heatmap.weight.data)) 
+    lastestname = os.path.join(final_output_dir, 'renew')
+    torch.save(model.state_dict(), lastestname + '.model')
+    '''
 
     if config.MODEL.NAME == "MobileNet16_":
         model = MobileNet16_()
@@ -155,12 +165,13 @@ def main():
         model.load_state_dict(new_state_dict)
         optimizer_state_dict = checkpoint['optimizer']
         '''
+        '''
         checkpoint = torch.load(args.resume)
         state_dict = checkpoint['state_dict']
         model.load_state_dict(state_dict)
         optimizer_state_dict = checkpoint['optimizer']
-
-        #model.load_state_dict(torch.load(args.resume))
+        '''
+        model.load_state_dict(torch.load(args.resume))
     
         '''
         optimizer = get_optimizer(config, model)
