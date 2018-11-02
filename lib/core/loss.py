@@ -19,7 +19,7 @@ class JointsMSELoss(nn.Module):
         self.criterion = nn.MSELoss(size_average=True)
         self.use_target_weight = use_target_weight
         self.col = float(heatmap_size)
-        self.scale = 1./float(self.col)
+        self.scale = 224./float(self.col)
 
     def forward(self, offset, heatmap, target, target_weight, meta, isValid=False, useOffset=False):
         batch_size = heatmap.size(0)
@@ -57,11 +57,11 @@ class JointsMSELoss(nn.Module):
         for i in range(batch_size):
             for j in range(num_joints):
                 #if heatmap[i, j, yCoords[i, j], xCoords[i, j]] > 0.5:
-                x[i, j, 0] = (offset[i, j, yCoords[i, j], xCoords[i, j]] + xCoords[i, j].float()) * self.col
-                x[i, j, 1] = (offset[i, j + 16, yCoords[i, j], xCoords[i, j]] + yCoords[i, j].float()) * self.col
+                x[i, j, 0] = (offset[i, j, yCoords[i, j], xCoords[i, j]] + xCoords[i, j].float()) * self.scale
+                x[i, j, 1] = (offset[i, j + num_joints, yCoords[i, j], xCoords[i, j]] + yCoords[i, j].float()) * self.scale
 
         diff2 = (x - joints)
-        diff2 = diff2*joints_vis/224.
+        diff2 = diff2*joints_vis/112.
         N2 = (joints_vis.sum()).data[0]/2.0
         diff2 = diff2.view(-1)
         d2 = 0.5 * torch.sqrt(diff2.dot(diff2))/N2

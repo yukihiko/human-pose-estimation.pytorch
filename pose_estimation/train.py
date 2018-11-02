@@ -165,13 +165,13 @@ def main():
         model.load_state_dict(new_state_dict)
         optimizer_state_dict = checkpoint['optimizer']
         '''
-        
+        '''
         checkpoint = torch.load(args.resume)
         state_dict = checkpoint['state_dict']
         model.load_state_dict(state_dict)
         optimizer_state_dict = checkpoint['optimizer']
-        
-        #model.load_state_dict(torch.load(args.resume))
+        '''
+        model.load_state_dict(torch.load(args.resume))
     
         '''
         optimizer = get_optimizer(config, model)

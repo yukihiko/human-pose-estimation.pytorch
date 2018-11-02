@@ -48,10 +48,8 @@ class MobileNet14_(nn.Module):
 
     def forward(self, x):
         x = self.model(x)
-        #x = x.view(-1, 1024)
         h = self.heatmap(x)
         h = F.sigmoid(h)
         o = self.offset(x)
-        #print(h[0, 1])
 
         return o, h
