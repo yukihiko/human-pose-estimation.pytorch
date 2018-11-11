@@ -165,19 +165,20 @@ def main():
         model.load_state_dict(new_state_dict)
         optimizer_state_dict = checkpoint['optimizer']
         '''
-        '''
+        
         checkpoint = torch.load(args.resume)
         state_dict = checkpoint['state_dict']
         model.load_state_dict(state_dict)
         optimizer_state_dict = checkpoint['optimizer']
-        '''
-        model.load_state_dict(torch.load(args.resume))
+        
+        #model.load_state_dict(torch.load(args.resume))
     
         '''
         optimizer = get_optimizer(config, model)
-
+        
         for p in model.model.parameters():
             p.requires_grad = False
+        
         heatmap_data = model.heatmap.weight.data 
         model.heatmap = nn.Conv2d(1024, 16, 1, bias=False)
         model.offset = nn.Conv2d(1024, 16*2, 1, bias=False)

@@ -14,7 +14,7 @@ DATASET:
   TEST_SET: valid
   TRAIN_SET: train
   FLIP: true
-  ROT_FACTOR: 89
+  ROT_FACTOR: 30
   SCALE_FACTOR: 0.25
 MODEL:
   NAME: MobileNet14_
@@ -42,7 +42,7 @@ MODEL:
     - 4
     NUM_LAYERS: 50
 LOSS:
-  USE_TARGET_WEIGHT: false
+  USE_TARGET_WEIGHT: true
 TRAIN:
   BATCH_SIZE: 20
   SHUFFLE: true

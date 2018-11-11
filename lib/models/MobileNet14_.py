@@ -43,13 +43,15 @@ class MobileNet14_(nn.Module):
             conv_dw(512, 1024, 1),
             conv_dw(1024, 1024, 1),
         )
-        self.heatmap = nn.Conv2d(1024, self.Nj, 1, bias=False)
-        self.offset = nn.Conv2d(1024, self.Nj*2, 1, bias=False)
+        #self.heatmap = nn.Conv2d(1024, self.Nj, 1, bias=False)
+        #self.offset = nn.Conv2d(1024, self.Nj*2, 1, bias=False)
+        self.output = nn.Conv2d(1024, self.Nj*3, 1, bias=False)
 
     def forward(self, x):
         x = self.model(x)
-        h = self.heatmap(x)
-        h = F.sigmoid(h)
-        o = self.offset(x)
+        #h = self.heatmap(x)
+        #h = F.sigmoid(h)
+        #o = self.offset(x)
+        o = self.output(x)
 
-        return o, h
+        return o

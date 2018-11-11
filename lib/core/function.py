@@ -43,7 +43,9 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
             input, target, target_weight, meta = input.cuda(), target.cuda(), target_weight.cuda(), meta
 
         # compute output
-        offset, heatmap = model(input)
+        output = model(input)
+        heatmap = output[:, 0:16, :, :]
+        offset = output[:, 16:48, :, :] 
         target = target.cuda(non_blocking=True)
         target_weight = target_weight.cuda(non_blocking=True)
 
@@ -117,7 +119,10 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                 input, target, target_weight, meta = input.cuda(), target.cuda(), target_weight.cuda(), meta
 
             # compute output
-            offset, heatmap = model(input)
+            output = model(input)
+            heatmap = output[:, 0:16, :, :]
+            offset = output[:, 16:48, :, :] 
+
             if config.TEST.FLIP_TEST:
                 # this part is ugly, because pytorch has not supported negative index
                 # input_flipped = model(input[:, :, :, ::-1])
