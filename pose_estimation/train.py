@@ -39,7 +39,7 @@ from utils.utils import create_logger
 
 import dataset
 import models
-from models import MnasNet_, MobileNet16_, MobileNet162_, MobileNet17_, MobileNet14_, MobileNet_
+from models import MnasNet_, MobileNet16_, MobileNet162_, MobileNet17_, MobileNet14_, MobileNet_, MobileNet14_4
 
 
 class OneDriveLogger(object):
@@ -165,13 +165,13 @@ def main():
         model.load_state_dict(new_state_dict)
         optimizer_state_dict = checkpoint['optimizer']
         '''
-        
+        '''
         checkpoint = torch.load(args.resume)
         state_dict = checkpoint['state_dict']
         model.load_state_dict(state_dict)
         optimizer_state_dict = checkpoint['optimizer']
-        
-        #model.load_state_dict(torch.load(args.resume))
+        '''
+        model.load_state_dict(torch.load(args.resume))
     
         '''
         optimizer = get_optimizer(config, model)
@@ -185,6 +185,7 @@ def main():
         model.heatmap.weight.data = heatmap_data
         model.offset.weight.data = torch.from_numpy(np.zeros_like(model.offset.weight.data)) 
         '''
+        #model.model2 = None
 
     writer_dict = {
         'writer': SummaryWriter(log_dir=tb_log_dir),
