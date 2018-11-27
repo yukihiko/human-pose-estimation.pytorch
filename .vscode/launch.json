@@ -36,8 +36,8 @@
                 "--gpus=0",
                 "--useOffset",
                 "--useOneDrive",
-                "--resume=${workspaceFolder}/output/mpii/MobileNet14_4/MobileNet14_4/epoch-7.model",
-                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet14_4/MobileNet14_4.yaml"
+                "--resume=${workspaceFolder}/output/mpii/MobileNet14_5/MobileNet14_5/epoch-239.model",
+                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet14_5/MobileNet14_5.yaml"
             ],
             "console": "none",
         }

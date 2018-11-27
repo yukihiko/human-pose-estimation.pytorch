@@ -17,8 +17,8 @@ DATASET:
   ROT_FACTOR: 30
   SCALE_FACTOR: 0.25
 MODEL:
-  NAME: MobileNet14_4
-  PRETRAINED: 'models/pytorch/MobileNet14_4.pth'
+  NAME: MobileNet14_5
+  PRETRAINED: 'models/pytorch/MobileNet14_5.pth'
   IMAGE_SIZE:
   - 224
   - 224

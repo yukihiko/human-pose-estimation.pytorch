@@ -39,7 +39,7 @@ from utils.utils import create_logger
 
 import dataset
 import models
-from models import MnasNet_, MobileNet16_, MobileNet162_, MobileNet17_, MobileNet14_, MobileNet_, MobileNet14_4
+from models import MnasNet_, MobileNet16_, MobileNet162_, MobileNet17_, MobileNet14_, MobileNet_, MobileNet14_4, MobileNet14_5
 
 
 class OneDriveLogger(object):
@@ -186,6 +186,18 @@ def main():
         model.offset.weight.data = torch.from_numpy(np.zeros_like(model.offset.weight.data)) 
         '''
         #model.model2 = None
+        def conv_dw(inp, oup, stride):
+            return nn.Sequential(
+                nn.Conv2d(inp, inp, 3, stride, 1, groups=inp, bias=False),
+                nn.BatchNorm2d(inp),
+                nn.ReLU(inplace=True),
+    
+                nn.Conv2d(inp, oup, 1, 1, 0, bias=False),
+                nn.BatchNorm2d(oup),
+                nn.ReLU(inplace=True),
+            )
+
+        model.model1_7_2 = conv_dw(512, 512, 1)
 
     writer_dict = {
         'writer': SummaryWriter(log_dir=tb_log_dir),
