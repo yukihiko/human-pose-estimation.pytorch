@@ -22,8 +22,9 @@
             "program": "${workspaceFolder}/pose_estimation/train.py",
             "args": [
                 "--gpus=0",
+                "--useOffset",
                 "--useOneDrive",
-                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet14_4/MobileNet14_4.yaml"
+                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet14_5/MobileNet14_5.yaml"
             ],
             "console": "none",
         }
@@ -36,7 +37,7 @@
                 "--gpus=0",
                 "--useOffset",
                 "--useOneDrive",
-                "--resume=${workspaceFolder}/output/mpii/MobileNet14_5/MobileNet14_5/epoch-239.model",
+                "--resume=${workspaceFolder}/output/mpii/MobileNet14_5/MobileNet14_5/checkpoint.pth.tar",
                 "--cfg=${workspaceFolder}/experiments/mpii/MobileNet14_5/MobileNet14_5.yaml"
             ],
             "console": "none",

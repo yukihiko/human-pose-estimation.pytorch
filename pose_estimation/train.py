@@ -165,13 +165,13 @@ def main():
         model.load_state_dict(new_state_dict)
         optimizer_state_dict = checkpoint['optimizer']
         '''
-        '''
+        
         checkpoint = torch.load(args.resume)
         state_dict = checkpoint['state_dict']
         model.load_state_dict(state_dict)
         optimizer_state_dict = checkpoint['optimizer']
-        '''
-        model.load_state_dict(torch.load(args.resume))
+        
+        #model.load_state_dict(torch.load(args.resume))
     
         '''
         optimizer = get_optimizer(config, model)
@@ -185,7 +185,9 @@ def main():
         model.heatmap.weight.data = heatmap_data
         model.offset.weight.data = torch.from_numpy(np.zeros_like(model.offset.weight.data)) 
         '''
+
         #model.model2 = None
+        '''
         def conv_dw(inp, oup, stride):
             return nn.Sequential(
                 nn.Conv2d(inp, inp, 3, stride, 1, groups=inp, bias=False),
@@ -197,8 +199,9 @@ def main():
                 nn.ReLU(inplace=True),
             )
 
+        model.model1_1_2 = conv_dw(256, 256, 1)
         model.model1_7_2 = conv_dw(512, 512, 1)
-
+        '''
     writer_dict = {
         'writer': SummaryWriter(log_dir=tb_log_dir),
         'train_global_steps': 0,
