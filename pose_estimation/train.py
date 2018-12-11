@@ -31,6 +31,7 @@ from core.config import update_config
 from core.config import update_dir
 from core.config import get_model_name
 from core.loss import JointsMSELoss
+from core.lossCoco import JointsMSELossCoco
 from core.function import train
 from core.function import validate
 from utils.utils import get_optimizer
@@ -39,7 +40,7 @@ from utils.utils import create_logger
 
 import dataset
 import models
-from models import MnasNet_, MobileNet16_, MobileNet162_, MobileNet17_, MobileNet14_, MobileNet_, MobileNet14_4, MobileNet14_5
+from models import MnasNet_, MobileNet16_, MobileNet162_, MobileNet17_, MobileNet14_, MobileNet_, MobileNet14_4, MobileNet14_5, MobileNetCoco14_5
 
 
 class OneDriveLogger(object):
@@ -220,7 +221,7 @@ def main():
 
     # define loss function (criterion) and optimizer
 
-    criterion = JointsMSELoss(
+    criterion = JointsMSELossCoco(
         use_target_weight=config.LOSS.USE_TARGET_WEIGHT, heatmap_size=config.MODEL.EXTRA.HEATMAP_SIZE[0]
     ).cuda()
         

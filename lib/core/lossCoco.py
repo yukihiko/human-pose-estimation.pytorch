@@ -14,9 +14,9 @@ from torch.autograd import Variable
 import scipy.ndimage.filters as fi
 
 
-class JointsMSELoss(nn.Module):
+class JointsMSELossCoco(nn.Module):
     def __init__(self, use_target_weight, heatmap_size):
-        super(JointsMSELoss, self).__init__()
+        super(JointsMSELossCoco, self).__init__()
         self.criterion = nn.MSELoss(size_average=True)
         self.use_target_weight = use_target_weight
         self.col = float(heatmap_size)
@@ -106,12 +106,10 @@ class JointsMSELoss(nn.Module):
             return d1, x, tt, target_weight
 
         diff2 = (x - joints)
-        '''
+        
         diff2 = diff2*joints_vis/112.
         N2 = (joints_vis.sum()).data[0]/2.0
         diff2 = diff2.view(-1)
         d2 = 0.5 * torch.sqrt(diff2.dot(diff2))/N2
-        '''
-        diff2 = diff2.view(-1)
-        d2 = 0.5 * torch.sqrt(diff2.dot(diff2))/(batch_size*num_joints)
+        
         return d1 + d2, x, tt, target_weight

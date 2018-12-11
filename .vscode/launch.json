@@ -22,9 +22,8 @@
             "program": "${workspaceFolder}/pose_estimation/train.py",
             "args": [
                 "--gpus=0",
-                "--useOffset",
                 "--useOneDrive",
-                "--cfg=${workspaceFolder}/experiments/mpii/MobileNet14_5/MobileNet14_5.yaml"
+                "--cfg=${workspaceFolder}/experiments/coco/MobileNet14_5/MobileNet14_5.yaml"
             ],
             "console": "none",
         }
@@ -41,6 +40,16 @@
                 "--cfg=${workspaceFolder}/experiments/mpii/MobileNet14_5/MobileNet14_5.yaml"
             ],
             "console": "none",
+        }
+        {
+            "name": "Python: nms",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/lib/nms/setup.py",
+            "args": [
+                "build_ext",
+                "install",
+            ],
         }
     ]
 }
