@@ -75,6 +75,7 @@ class JointsMSELossCoco(nn.Module):
                 x[i, j, 0] = (offset[i, j, yCoords[i, j], xCoords[i, j]] + xCoords[i, j].float()) * self.scale
                 x[i, j, 1] = (offset[i, j + num_joints, yCoords[i, j], xCoords[i, j]] + yCoords[i, j].float()) * self.scale
 
+                '''
                 if int(target_weight[i, j, 0]) >= 0.5:
                     xi, yi, f = self.checkMatrix(int(ti[i, j, 0]), int(ti[i, j, 1]))
                     
@@ -86,7 +87,8 @@ class JointsMSELossCoco(nn.Module):
                     else:
                         target_weight[i, j, 0] = 0
                         #target_weight[i, j, 1] = 0
-        
+                '''
+
         diff1 = heatmap - target
         '''
         cnt = 0
@@ -103,7 +105,7 @@ class JointsMSELossCoco(nn.Module):
         d1 = diff1.dot(diff1) / (batch_size*num_joints)
 
         if useOffset == False:
-            return d1, x, tt, target_weight
+            return d1, x, target, target_weight
 
         diff2 = (x - joints)
         
@@ -112,4 +114,4 @@ class JointsMSELossCoco(nn.Module):
         diff2 = diff2.view(-1)
         d2 = 0.5 * torch.sqrt(diff2.dot(diff2))/N2
         
-        return d1 + d2, x, tt, target_weight
+        return d1 + d2, x, target, target_weight
