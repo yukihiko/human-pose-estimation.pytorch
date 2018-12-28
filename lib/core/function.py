@@ -20,6 +20,7 @@ from core.evaluate import accuracy
 from core.inference import get_final_preds
 from utils.transforms import flip_back
 from utils.vis import save_debug_images
+from torch.autograd import Variable
 
 
 logger = logging.getLogger(__name__)
@@ -52,7 +53,8 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         target = target.cuda(non_blocking=True)
         target_weight = target_weight.cuda(non_blocking=True)
 
-        loss, pt, target, target_weight = criterion(offset, heatmap, target, target_weight, meta, useOffset=useOffset)
+        #loss, pt, target, target_weight = criterion(offset, heatmap, target, target_weight, meta, useOffset=useOffset)
+        loss, pt = criterion(offset, heatmap, target, target_weight, meta, useOffset=useOffset)
 
         # compute gradient and do update step
         optimizer.zero_grad()
@@ -149,7 +151,8 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
             target = target.cuda(non_blocking=True)
             target_weight = target_weight.cuda(non_blocking=True)
 
-            loss, pt, target, target_weight = criterion(offset, heatmap, target, target_weight, meta, isValid=True, useOffset=useOffset)
+            #loss, pt, target, target_weight = criterion(offset, heatmap, target, target_weight, meta, isValid=True, useOffset=useOffset)
+            loss, pt = criterion(offset, heatmap, target, target_weight, meta, isValid=True, useOffset=useOffset)
 
             num_images = input.size(0)
             # measure accuracy and record loss

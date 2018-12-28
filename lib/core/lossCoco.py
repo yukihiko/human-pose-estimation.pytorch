@@ -105,13 +105,14 @@ class JointsMSELossCoco(nn.Module):
         d1 = diff1.dot(diff1) / (batch_size*num_joints)
 
         if useOffset == False:
-            return d1, x, target, target_weight
+            return d1, x
 
         diff2 = (x - joints)
         
         diff2 = diff2*joints_vis/112.
-        N2 = (joints_vis.sum()).data[0]/2.0
+        N2 = (joints_vis.sum()).data/2.0
         diff2 = diff2.view(-1)
+        #d2 = 0.5 * torch.sqrt(diff2.dot(diff2))/N2
         d2 = 0.5 * torch.sqrt(diff2.dot(diff2))/N2
         
-        return d1 + d2, x, target, target_weight
+        return d1 + d2, x
